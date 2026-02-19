@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 # Creacion de Modelos
 class Category(models.Model):
+    # Cadena corta
     slug = models.SlugField()
     # El db_index es cuando un campo se usara para muchas busquedas
     title = models.CharField(max_length=255, db_index=True)

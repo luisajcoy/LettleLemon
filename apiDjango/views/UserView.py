@@ -87,7 +87,7 @@ class ManageDelete(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Remover usuario del grupo 
+        # Eliminar usuario del grupo 
         manager_group.user_set.remove(usuario)
         
         #Respuesta 
