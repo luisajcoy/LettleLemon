@@ -8,8 +8,9 @@ django = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
 psycopg2-binary = "*"
+djangorestframework = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "3.13"

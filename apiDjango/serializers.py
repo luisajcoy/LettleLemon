@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Category, MenuItem
+from .models import Category, MenuItem, Orden, OrdenItem
 
 # Serializer para mostrar informacion de usuario
 class UserSerializer(serializers.ModelSerializer):
@@ -39,5 +39,20 @@ class MenuItemSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return menu_item
+    
+# Serializer OrdenItem
+class OrdenItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrdenItem
+        fields = ['id', 'menuitem', 'quantity', 'unit_price', 'price']
         
+        
+# Serializer Orden 
+class OrdenSerializer (serializers.ModelSerializer):
+    
+    # El source es el acceso interno al campo en la tabla orden para acceder a los items de la orden
+    items = OrdenItemSerializer(many=True, read_only =True, source='ordenitem_set' )
+    class Meta:
+        model = Orden
+        fields = ['id', 'user', 'delivery_crew', 'status', 'total', 'date']
     

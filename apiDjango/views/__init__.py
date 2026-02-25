@@ -2,6 +2,7 @@ from .UserView import ManageUser, ManageDelete
 from .CategoryView import CategoryAdd
 from .DeliveryUserView import DeliveryUser, DeliveryDelete
 from .MenuItemView import MenuItemAdd
+from .DeliveryOrdenView import DeliveryOrderListView
 
 # Exportar la clase para que se pueda importar fácilmente
-__all__ = ['ManageUser', 'ManageDelete', 'CategoryAdd', 'DeliveryUser', 'DeliveryDelete', 'MenuItemAdd']
+__all__ = ['ManageUser', 'ManageDelete', 'CategoryAdd', 'DeliveryUser', 'DeliveryDelete', 'MenuItemAdd', 'DeliveryOrderListView']
