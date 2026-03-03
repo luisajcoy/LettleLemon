@@ -55,4 +55,18 @@ class OrdenSerializer (serializers.ModelSerializer):
     class Meta:
         model = Orden
         fields = ['id', 'user', 'delivery_crew', 'status', 'total', 'date']
+        
+        
+# Serializer status de order
+class OrdenStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Orden
+        fields = ['status']
+        
+    # Verifica si el valor es booleano
+    def validate_status(self, value):
+        # Validar que el status sea un boolean
+        if not isinstance(value,bool):
+            raise serializers.ValidationError("El valor debe ser un valor Boolean (True/False)")
+        return value
     

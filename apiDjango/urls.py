@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ManageUser, ManageDelete, CategoryAdd, DeliveryUser, DeliveryDelete, MenuItemAdd, DeliveryOrderListView
+from .views import ManageUser, ManageDelete, CategoryAdd, DeliveryUser, DeliveryDelete, MenuItemAdd, DeliveryOrderListView, DeliveryOrderUpdateView, MenuItemListView, MenuItemByCategory 
 
 urlpatterns = [
     # GRUPOS
@@ -13,8 +13,11 @@ urlpatterns = [
     path('group/delivery/users', DeliveryUser.as_view(), name= 'delivery-users'),
     path('group/delivery/users/<int:userId>', DeliveryDelete.as_view(), name='delivery-delete'),
     path('delivery/orders', DeliveryOrderListView.as_view(), name= 'delivery-orders'),
+    path('delivery/orders/<int:pk>/status', DeliveryOrderUpdateView.as_view(), name= 'delivery-order-update-status'),
     
     # MENUITEMS
     path('menu/item/add', MenuItemAdd.as_view(), name='menuitem-add'),
+    path('menu/item/all', MenuItemListView.as_view(), name='menuitem-all'),
+    path('menu/item/category/<int:category_id>', MenuItemByCategory.as_view(), name='menuitem-by-category')
 ]
 
