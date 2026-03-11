@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Category, MenuItem, Orden, OrdenItem
+from .models import Category, MenuItem, Orden, OrdenItem, Cart
 
 # Serializer para mostrar informacion de usuario
 class UserSerializer(serializers.ModelSerializer):
@@ -69,4 +69,38 @@ class OrdenStatusSerializer(serializers.ModelSerializer):
         if not isinstance(value,bool):
             raise serializers.ValidationError("El valor debe ser un valor Boolean (True/False)")
         return value
+
+# Serializer de cart 
+class CartSerializer(serializers.ModelSerializer):
+    menuitem = MenuItemSerializer(read_only=True)
+    menuitem_id = serializers.IntegerField(write_only=True)
     
+    class Meta:
+        model= Cart
+        fields = ['id', 'menuitem', 'menuitem_id', 'quantity', 'unit_price', 'price']
+        read_only_fields = ['unit_price', 'price']
+
+    def create(self, validated_data):
+        menuitem_id = validated_data.get('menuitem_id')
+        try:
+            menuitem = MenuItem.objects.get(id = menuitem_id)
+        except MenuItem.DoesNotExist:
+            raise serializers.ValidationError({"menuitem_id": "MenuItem no existe"})
+        
+        # Calcular precio con cantidad
+        quantity = validated_data.get('quantity')
+        unit_price = menuitem.price
+        price = unit_price * quantity
+
+        # Crear item del carrito
+        cart_item = Cart.objects.create(
+            user = self.context['request'].user,
+            menuitem = menuitem,
+            quantity = quantity ,
+            unit_price = unit_price ,
+            price = price
+        )
+        return cart_item
+
+
+

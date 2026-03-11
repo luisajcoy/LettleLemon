@@ -43,11 +43,15 @@ class MenuItemListView(ListAPIView):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
     permission_classes = [IsAuthenticated]
+    ordering_fields= ['price', 'title']
+    ordering = ['price']
     
 # Muestra todos los menuitems de la categoria
 class MenuItemByCategory(ListAPIView):
     serializer_class = MenuItemSerializer
     permission_classes = [IsAuthenticated]
+    ordering_fields= ['price', 'title']
+    ordering = ['price']
     
     def get_queryset(self):
         # Obtiene el id de la URL
