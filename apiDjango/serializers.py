@@ -103,4 +103,38 @@ class CartSerializer(serializers.ModelSerializer):
         return cart_item
 
 
+class OrdenAssignSerializer(serializers.ModelSerializer):
+    delivery_crew_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = Orden
+        fields = ['delivery_crew_id']
+
+    def validate_delivery_crew_id(self, value):
+        try:
+            user = User.objects.get(id=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('El repartidor no existe')
+
+        if not user.groups.filter(name='Delivery Crew').exists():
+            raise serializers.ValidationError('El usuario no pertenece al grupo Delivery Crew')
+
+        return value
+
+    def update(self, instance, validated_data):
+        delivery_crew_id = validated_data.get('delivery_crew_id')
+        instance.delivery_crew = User.objects.get(id=delivery_crew_id)
+        instance.save()
+        return instance
+
+# Actualizar articulo del dia 
+class MenuItemFeaturedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuItem
+        fields = ['featured']
+
+    def validate_featured(self, value):
+        if not isinstance(value, bool):
+            raise serializers.ValidationError('featured debe ser True o False')
+        return value
 

@@ -1,9 +1,17 @@
 from rest_framework.generics import UpdateAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.response import Response
 from rest_framework import status 
 from ..models import Orden 
-from ..serializers import OrdenStatusSerializer
+from ..serializers import OrdenStatusSerializer, OrdenAssignSerializer
+
+class IsManagerGroup(BasePermission):
+    def has_permission(self, request, view):
+        return (
+            request.user and
+            request.user.is_authenticated and
+            request.user.groups.filter(name='Manage').exists()
+        )
 
 class DeliveryOrderUpdateView(UpdateAPIView):
     serializer_class = OrdenStatusSerializer
@@ -37,3 +45,28 @@ class DeliveryOrderUpdateView(UpdateAPIView):
                 }, status= status.HTTP_200_OK
             )
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    
+# Asignacion de delivery a pedido
+class ManagerAssignOrderView(UpdateAPIView):
+    serializer_class = OrdenAssignSerializer
+    permission_classes = [IsManagerGroup]
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        return Orden.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(
+                {
+                    'message': 'Pedido asignado correctamente',
+                    'orden_id': instance.id,
+                    'delivery_crew_id': instance.delivery_crew.id if instance.delivery_crew else None
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

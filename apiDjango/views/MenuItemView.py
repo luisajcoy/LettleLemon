@@ -1,11 +1,20 @@
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from django.contrib.auth.models import User,Group
-from ..serializers import MenuItemSerializer
+from ..serializers import MenuItemSerializer, MenuItemFeaturedSerializer
 from ..models import MenuItem, Category
+
+# Creacion de permisos personalizados
+class IsManagerGroup(BasePermission):
+    def has_permission(self, request, view):
+        return (
+            request.user and
+            request.user.is_authenticated and
+            request.user.groups.filter(name='Manage').exists()
+        )
 
 class MenuItemAdd(APIView):
     permission_classes = [IsAuthenticated]
@@ -59,4 +68,8 @@ class MenuItemByCategory(ListAPIView):
         return MenuItem.objects.filter(category = category_id)
     
         
-    
+class ManagerMenuItemFeaturedUpdateView(UpdateAPIView):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemFeaturedSerializer
+    permission_classes = [IsManagerGroup]
+    lookup_field = 'pk'
